@@ -1,0 +1,63 @@
+/* Hide scrollbar for all browsers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Card sizing: 1 create + 3 stories visible exactly */
+/* Tailwind gap-3 = 0.75rem; 3 gaps between 4 cards = 2.25rem */
+.story-card {
+  width: calc((100% - 2.25rem) / 4); /* exact 4 cards fit in viewport */
+  height: 200px;
+  flex-shrink: 0;
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Create story card */
+.create-story-card {
+  background-color: #f9f9f9;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid #d1d5db; /* gray-300 */
+}
+
+/* Media inside story */
+.story-card img,
+.story-card video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+/* Circular avatar on top-left */
+.story-card .avatar {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid #3b82f6; /* Tailwind blue-500 */
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* Username and timestamp at bottom */
+.story-card .story-info {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: white;
+  font-size: 10px;
+}
