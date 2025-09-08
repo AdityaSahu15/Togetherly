@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import './StoriesBar.css';
 import moment from 'moment';
 import StoryModel from './StoryModel';
+import StoryViewer from './StoryViewer';
 
 const StoriesBar = () => {
   const [stories, setStories] = useState([]);
@@ -30,7 +31,7 @@ const StoriesBar = () => {
 
       {/* Render all stories */}
       {stories.map((story, index) => (
-        <div
+        <div onClick={()=>{ setViewStory(story)}}
           key={index}
           className="flex-shrink-0 story-card relative rounded-lg overflow-hidden cursor-pointer shadow"
         >
@@ -79,6 +80,12 @@ const StoriesBar = () => {
      {/*Add story model */}
       {
         showModel && <StoryModel setShowModel={setShowModel} fetchStories={fetchStories}/>
+      }
+
+      {/*view story model */}
+
+      {
+        viewStory && <StoryViewer viewStory={viewStory} setViewStory={setViewStory} />
       }
       
     </div>
