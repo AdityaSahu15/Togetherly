@@ -8,21 +8,24 @@ import StoryViewer from './StoryViewer';
 
 const StoriesBar = () => {
   const [stories, setStories] = useState([]);
-  const[showModel,setShowModel]=useState(false);
-  const[viewStory,setViewStory]=useState(false);
+  const [showModel, setShowModel] = useState(false);
+  const [viewStory, setViewStory] = useState(false);
 
-  const fetchStories=async()=>{
-    setStories(dummyStoriesData)
-  }
+  const fetchStories = async () => {
+    setStories(dummyStoriesData);
+  };
 
   useEffect(() => {
     fetchStories();
   }, []);
 
   return (
-    <div  className="flex gap-3 overflow-x-auto p-2 no-scrollbar">
+    <div className="flex gap-3 overflow-x-auto p-2 no-scrollbar">
       {/* Add story card */}
-      <div onClick={()=>setShowModel(true)} className="flex-shrink-0 create-story-card story-card flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300">
+      <div
+        onClick={() => setShowModel(true)}
+        className="flex-shrink-0 create-story-card story-card flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300"
+      >
         <div className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 text-white">
           <Plus size={24} />
         </div>
@@ -31,13 +34,16 @@ const StoriesBar = () => {
 
       {/* Render all stories */}
       {stories.map((story, index) => (
-        <div onClick={()=>{ setViewStory(story)}}
+        <div
+          onClick={() => {
+            setViewStory(story);
+          }}
           key={index}
           className="flex-shrink-0 story-card relative rounded-lg overflow-hidden cursor-pointer shadow"
         >
           {/* Story media */}
           {story.media_type && story.media_type !== 'text' ? (
-            story.media_type === "image" ? (
+            story.media_type === 'image' ? (
               <img
                 src={story.media_url}
                 alt="story media"
@@ -77,17 +83,15 @@ const StoriesBar = () => {
         </div>
       ))}
 
-     {/*Add story model */}
-      {
-        showModel && <StoryModel setShowModel={setShowModel} fetchStories={fetchStories}/>
-      }
+      {/* Add story model */}
+      {showModel && (
+        <StoryModel setShowModel={setShowModel} fetchStories={fetchStories} />
+      )}
 
-      {/*view story model */}
-
-      {
-        viewStory && <StoryViewer viewStory={viewStory} setViewStory={setViewStory} />
-      }
-      
+      {/* View story model */}
+      {viewStory && (
+        <StoryViewer viewStory={viewStory} setViewStory={setViewStory} />
+      )}
     </div>
   );
 };
