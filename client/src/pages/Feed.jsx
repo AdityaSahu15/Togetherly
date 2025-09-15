@@ -19,7 +19,7 @@ const Feed = () => {
   }, []);
 
   return !loading ? (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 ">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-2 ">
       {/* Left: Stories + Feed */}
       <div className="md:col-span-2">
         <StoriesBar />
