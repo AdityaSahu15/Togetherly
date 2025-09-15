@@ -4,12 +4,11 @@ import { Eye, MessageSquare } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 const Messages = () => {
-
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-2xl p-6">
+      <div className="max-w-5xl mx-auto bg-white shadow-md rounded-2xl p-6">
         {/* title */}
         <h1 className="text-2xl font-bold text-gray-800">Messages</h1>
         <p className="text-gray-500 mb-6">Talk to your friends and family</p>
@@ -29,7 +28,9 @@ const Messages = () => {
                     className="w-14 h-14 rounded-full object-cover border-2 border-indigo-500"
                   />
                   <div>
-                    <p className="font-semibold text-gray-800">{user.full_name}</p>
+                    <p className="font-semibold text-gray-800">
+                      {user.full_name}
+                    </p>
                     <p className="text-md text-gray-500">@{user.username}</p>
                     <p className="text-sm text-gray-400">{user.bio}</p>
                   </div>
