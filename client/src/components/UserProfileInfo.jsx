@@ -26,7 +26,7 @@ const UserProfileInfo = ({ user, posts, profileId, setShowEdit }) => {
             {!profileId && (
               <button
                 onClick={() => setShowEdit(true)}
-                className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition"
+                className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition cursor-pointer hover:scale-105"
               >
                 <PenBox className="w-4 h-4" />
                 Edit
@@ -54,6 +54,21 @@ const UserProfileInfo = ({ user, posts, profileId, setShowEdit }) => {
               <Calendar className="w-4 h-4" />
               Joined <span>{moment(user.createdAt).fromNow()}</span>
             </span>
+          </div>
+
+          <div className=''>
+            <div>
+              <span className=''>{posts.length}</span>
+              <span className=''>posts</span>
+            </div>
+              <div>
+              <span className=''>{user.followers.length}</span>
+              <span className=''>Followers</span>
+            </div>
+              <div>
+              <span className=''>{user.following.length}</span>
+              <span className=''>Following</span>
+            </div>
           </div>
         </div>
       </div>
