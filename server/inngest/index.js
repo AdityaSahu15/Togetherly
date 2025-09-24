@@ -2,6 +2,8 @@ import { Inngest } from "inngest";
 import User from "../models/User.js";
 import Connection from "../models/Connection.js";
 import { sendEmail } from "../configs/nodeMailer.js";
+import Story from "../models/Story.js";
+import Message from "../models/Message.js";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "Togetherly-app" });
@@ -93,21 +95,20 @@ const sendNewConnectionRequestReminder = inngest.createFunction(
 `;
 
             await sendEmail({
-                to:connection.to_user_id.email,
+                to: connection.to_user_id.email,
                 subject,
                 body
             })
         })
 
-        const in24Hours=new Date(Date.now())+24*60*60*1000;
+        const in24Hours = new Date(Date.now()) + 24 * 60 * 60 * 1000;
 
-        await step.sleepUntil("wait-for-24-hours",in24Hours);
-        await step.run('send-connection-request-reminder',async()=>{
+        await step.sleepUntil("wait-for-24-hours", in24Hours);
+        await step.run('send-connection-request-reminder', async () => {
             const connection = await Connection.findById(connectionId).populate('from_user_id,to_user_id');
 
-            if(connection.status === 'accepted')
-            {
-                return {message:"Already accepted"}
+            if (connection.status === 'accepted') {
+                return { message: "Already accepted" }
             }
 
             const subject = `New Connection Request`
@@ -127,16 +128,74 @@ const sendNewConnectionRequestReminder = inngest.createFunction(
 `;
 
             await sendEmail({
-                to:connection.to_user_id.email,
+                to: connection.to_user_id.email,
                 subject,
                 body
             })
 
-            return {message:"Reminder sent"}
+            return { message: "Reminder sent" }
 
 
         })
     }
+)
+
+
+// inngest function to delete story after 24 hours 
+
+const deleteStory = inngest.createFunction(
+    { id: 'story-delete' },
+    { event: 'app/story.delete' },
+    async ({ event, step }) => {
+        const { storyId } = event.data;
+        const in24Hours = new Date(Date.now() + 24 * 60 * 60 * 1000)
+        await step.sleepUntil('wait-for-24-hours', in24Hours)
+        await step.run('delete-story', async () => {
+            await Story.findByIdAndDelete(storyId)
+
+            return { message: "Story deleted" }
+        })
+
+    }
+)
+
+const sendNotificationOfUnseenMessages = inngest.createFunction(
+    { id: "send-unseen-messages-notification" },
+    { cron: "TZ=America/New_York 0 9 * * *" }, // every day at 9 am 
+    async (step) => {
+        const messages = await Message.find({ seen: false }).populate('to_user_id');
+        const unseenCount = {}
+
+        messages.map(message => {
+            unseenCount[message.to_user_id._id] = (unseenCount[message.to_user_id._id] || 0) + 1
+        })
+
+        for (const userId in unseenCount) {
+            const user = await User.findById(userId);
+
+            const subject = `You have ${unseenCount[userId]} unseen messages`
+
+            const body = `
+  <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <h2 style="color: #4F46E5;">Hello ${user.full_name || 'User'},</h2>
+    <p>You have <strong>${unseenCount[userId]}</strong> unseen messages waiting for you.</p>
+    <p>Please log in to your account to check them.</p>
+    <p style="margin-top: 20px; font-size: 12px; color: #777;">
+      This is an automated notification, please do not reply.
+    </p>
+  </div>
+`;
+
+            await sendEmail({
+                to:user.email,
+                subject,
+                body
+            })
+
+        }
+        return {message:"Notification sent !"}
+    }
+
 )
 
 // Create an empty array where we'll export future Inngest functions
@@ -144,6 +203,8 @@ export const functions = [
     syncUserCreation,
     syncUserUpdation,
     syncUserDeletion,
-    sendNewConnectionRequestReminder
+    sendNewConnectionRequestReminder,
+    deleteStory,
+    sendNotificationOfUnseenMessages
 ];
 
