@@ -7,7 +7,7 @@ import { getUserRecentMessages } from '../controllers/messageController.js';
 const userRouter=express.Router();
 
 userRouter.get('/data',protect,getUserData)
-userRouter.post('/update',protect,upload.fields([{name:'profile',maxCount:1},{name:'cover',maxCount:1}]),updateUserData)
+userRouter.post('/update',protect,upload.fields([{name:'profile_picture',maxCount:1},{name:'cover_photo',maxCount:1}]),updateUserData)
 userRouter.post('/discover',protect,discoverUser)
 userRouter.post('/follow',protect,followUser)
 userRouter.post('/unfollow',protect,unfollowUser)

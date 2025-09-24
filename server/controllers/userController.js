@@ -54,8 +54,8 @@ console.log("FILES =>", req.files);
             full_name
         };
 
-        const profile = req.files.profile && req.files.profile[0];
-        const cover = req.files.cover && req.files.cover[0];
+        const profile = req.files.profile_picture && req.files.profile_picture[0];
+        const cover = req.files.cover_photo && req.files.cover_photo[0];
 
         if (profile) {
             const buffer = fs.readFileSync(profile.path);
@@ -317,7 +317,7 @@ export const getUserProfiles=async(req,res)=>{
             return res.json({success:false,message:"Profile not found"})
         }
 
-        const posts = Post.find({user:profileId}).populate('user')
+        const posts = await Post.find({user:profileId}).populate('user')
         res.json({success:true,profile,posts})
 
     } catch (error) {

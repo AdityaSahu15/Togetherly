@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import { dummyUserData } from '../assets/assets'
 import { Pencil } from 'lucide-react'
+import { useSelector,useDispatch } from 'react-redux'
+import { updateUser } from '../features/user/userSlice'
+import { useAuth } from '@clerk/clerk-react'
+import toast from 'react-hot-toast'
 
 const ProfileModel = ({ setShowEdit }) => {
-  const user = dummyUserData
+
+  const dispatch=useDispatch()
+  const {getToken}=useAuth()
+  const user =useSelector((state)=>state.user.value)
+
   const [editForm, setEditForm] = useState({
     username: user.username,
     bio: user.bio,
@@ -15,7 +22,20 @@ const ProfileModel = ({ setShowEdit }) => {
 
   const handleSaveProfile = async (e) => {
     e.preventDefault()
-    // save logic placeholder
+
+    const userData=new FormData();
+    const {full_name,username,bio,location,profile_picture,cover_photo}=editForm
+
+    userData.append('username',username);
+    userData.append('bio',bio);
+    userData.append('location',location);
+    userData.append('full_name',full_name);
+    profile_picture && userData.append('profile_picture',profile_picture);
+    cover_photo && userData.append('cover_photo',cover_photo);
+
+    const token=await getToken();
+    // Return dispatch promise for toast.promise
+    return dispatch(updateUser({userData,token})).unwrap();
   }
 
   // Disable background scroll when modal opens
@@ -42,7 +62,15 @@ const ProfileModel = ({ setShowEdit }) => {
 
         {/* Form */}
         <form
-          onSubmit={handleSaveProfile}
+          onSubmit={(e) =>
+            toast.promise(handleSaveProfile(e), {
+              loading: 'Saving...',
+              success: () => {
+                setShowEdit(false)
+              },
+              error: (err) => err.message || 'Error saving profile',
+            })
+          }
           className="p-6 space-y-6 overflow-y-auto flex-1"
         >
           {/* Profile Picture */}
@@ -100,7 +128,7 @@ const ProfileModel = ({ setShowEdit }) => {
                     : user.cover_photo
                 }
                 alt="cover"
-                className="w-full h-full object-cover shadow-sm"
+                className="w-full h-full object-cover object-center shadow-sm"
               />
               <label
                 htmlFor="cover_photo"
