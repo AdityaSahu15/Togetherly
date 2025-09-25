@@ -7,31 +7,26 @@ const connections={}
 
 // controller function for the SSE ednpoint 
 
-export const sseController=(req,res)=>{
-    const {userId}=req.params
-    console.log('New client connected',userId)
+export const sseController = (req, res) => {
+  const { userId } = req.params
+  console.log('New client connected', userId)
 
-    // Set SSE headers
+  res.setHeader('Content-Type', 'text/event-stream')
+  res.setHeader('Cache-Control', 'no-cache')
+  res.setHeader('Connection', 'keep-alive')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.flushHeaders() // <-- MUST
 
-    res.setHeader('Content-Type','text/event-stream');
-    res.setHeader('Cache-Control','no-cache');
-    res.setHeader('Connection','keep-alive');
-    res.setHeader('Access-Control-Allow-Origin','*');
+  connections[userId] = res
 
-    //Add the client's response object to the connections object 
+  res.write('log:Connected to SSE stream\n\n')
 
-    connections[userId]=res
-
-    // Send an initial event to the client 
-    res.write('log:Connected to SSE stream\n\n')
-
-    // handle client disconnection
-    req.on('close',()=>{
-        // Remove the client's response object from the connections array
-        delete connections[userId];
-        console.log('Client disconnected')
-    })
+  req.on('close', () => {
+    delete connections[userId]
+    console.log('Client disconnected')
+  })
 }
+
 
 
 // send message
@@ -93,7 +88,7 @@ export const sendMessage=async(req,res)=>{
 
 export const getChatMessages=async(req,res)=>{
     try {
-        const {userId}=User.auth();
+        const {userId}=req.auth();
         const{to_user_id}=req.body;
 
         const messages=await Message.find({

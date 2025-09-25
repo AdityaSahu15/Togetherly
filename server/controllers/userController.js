@@ -108,30 +108,30 @@ console.log("FILES =>", req.files);
 // find user using username, location , name 
 
 
-export const discoverUser= async(req,res)=>{
-    try {
-        const {userId} = await req.auth()
+export const discoverUser = async (req, res) => {
+  try {
+    const { userId } = await req.auth();
 
-        const {input} =req.body;
+    const { input } = req.body;
 
-        const allUsers=await User.find({
-            $or:[
-                {username:new RegExp(input,i)},
-                {email:new RegExp(input,i)},
-                {full_name:new RegExp(input,i)},
-                {location:new RegExp(input,i)},
-            ]
-        })
+    const allUsers = await User.find({
+      $or: [
+        { username: new RegExp(input, "i") },
+        { email: new RegExp(input, "i") },
+        { full_name: new RegExp(input, "i") },
+        { location: new RegExp(input, "i") },
+      ],
+    });
 
-        const filteredUsers=allUsers.filter(user => user._id !== userId)
+    const filteredUsers = allUsers.filter(user => user._id.toString() !== userId);
 
-        return res.json({success:true,users:filteredUsers})
+    return res.json({ success: true, users: filteredUsers });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
 
-    } catch (error) {
-        console.log(error)
-        res.json({success:false,message:error.message})
-    }
-}
 
 
 // follow user

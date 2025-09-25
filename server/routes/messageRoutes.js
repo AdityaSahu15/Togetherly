@@ -8,6 +8,7 @@ const messageRouter=express.Router();
 messageRouter.get('/:userId',sseController)
 messageRouter.post('/post',upload.single('image'),protect,sendMessage)
 messageRouter.post('/get',protect,getChatMessages)
+messageRouter.post("/send", protect, upload.single("image"), sendMessage);
 
 
 export default messageRouter;

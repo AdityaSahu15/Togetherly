@@ -25,7 +25,7 @@ const handleSubmit = async () => {
   setLoading(true);
 
   const postType = images.length && content
-    ? 'text_with_image'
+    ? 'text-with-image'
     : images.length
     ? 'image'
     : 'text';

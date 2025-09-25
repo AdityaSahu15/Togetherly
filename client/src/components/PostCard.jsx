@@ -1,9 +1,11 @@
 import { BadgeCheck, Heart, MessageCircle, Share2 } from 'lucide-react';
 import moment from 'moment';
 import React, { useState } from 'react';
-import { dummyUserData } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useAuth } from '@clerk/clerk-react';
+import api from '../api/axios';
+import toast from 'react-hot-toast';
 
 const PostCard = ({ post }) => {
   const postWithHashTags = post.content.replace(
@@ -11,19 +13,47 @@ const PostCard = ({ post }) => {
     '<span class="text-indigo-600 font-medium">$1</span>'
   );
 
-  const [likes, setLikes] = useState(post.likes_count);
-  const currentUSer = useSelector((state)=>state.user.value)
+  // ✅ use likes array instead of likes_count
+  const [likes, setLikes] = useState(post.likes || []);  
+
+  const currentUser = useSelector((state) => state.user.value);
+  const { getToken } = useAuth();
 
   const handleLike = async () => {
-    // like logic here
+    try {
+      const { data } = await api.post(
+        `/api/post/like`,
+        { postId: post._id },
+        {
+          headers: { Authorization: `Bearer ${await getToken()}` },
+        }
+      );
+      if (data.success) {
+        toast.success(data.message);
+        setLikes((prev) => {
+          if (prev.includes(currentUser._id)) {
+            return prev.filter((id) => id !== currentUser._id); // unlike
+          } else {
+            return [...prev, currentUser._id]; // like
+          }
+        });
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-md border border-gray-200 dark:border-zinc-800 p-4 mb-5 w-full transition hover:shadow-lg">
       {/* User info */}
-      <div onClick={()=>navigate('/profile/'+post.user._id)} className="flex items-center gap-3 mb-3 cursor-pointer">
+      <div
+        onClick={() => navigate('/profile/' + post.user._id)}
+        className="flex items-center gap-3 mb-3 cursor-pointer"
+      >
         <img
           src={post.user.profile_picture}
           alt=""
@@ -78,7 +108,7 @@ const PostCard = ({ post }) => {
         >
           <Heart
             className={`w-5 h-5 ${
-              likes.includes(currentUSer._id) ? 'text-red-500 fill-red-500' : ''
+              likes.includes(currentUser._id) ? 'text-red-500 fill-red-500' : ''
             }`}
           />
           <span className="text-sm">{likes.length}</span>
