@@ -13,8 +13,8 @@ const PostCard = ({ post }) => {
     '<span class="text-indigo-600 font-medium">$1</span>'
   );
 
-  // ✅ use likes array instead of likes_count
-  const [likes, setLikes] = useState(post.likes || []);  
+  // ✅ use likes_count from backend
+  const [likes, setLikes] = useState(post.likes_count || []);
 
   const currentUser = useSelector((state) => state.user.value);
   const { getToken } = useAuth();
@@ -28,15 +28,10 @@ const PostCard = ({ post }) => {
           headers: { Authorization: `Bearer ${await getToken()}` },
         }
       );
+
       if (data.success) {
         toast.success(data.message);
-        setLikes((prev) => {
-          if (prev.includes(currentUser._id)) {
-            return prev.filter((id) => id !== currentUser._id); // unlike
-          } else {
-            return [...prev, currentUser._id]; // like
-          }
-        });
+        setLikes(data.likes); // 👈 update state from backend
       } else {
         toast.error(data.message);
       }
