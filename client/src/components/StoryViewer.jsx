@@ -68,7 +68,7 @@ const StoryViewer = ({ viewStory, setViewStory }) => {
         return (
           <div
             className="flex items-center justify-center w-full h-full p-6"
-            style={{ backgroundColor: viewStory.backgroundColor || '#333' }}
+            style={{ backgroundColor: viewStory.background_color || '#333' }}
           >
             <p className="text-white text-lg font-medium text-center whitespace-pre-wrap">
               {viewStory.content}

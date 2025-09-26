@@ -62,30 +62,31 @@ const StoriesBar = () => {
           key={index}
           className="flex-shrink-0 story-card relative rounded-lg overflow-hidden cursor-pointer shadow"
         >
-          {/* Story media */}
-          {story.media_type && story.media_type !== 'text' ? (
-            story.media_type === 'image' ? (
-              <img
-                src={story.media_url}
-                alt="story media"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <video
-                src={story.media_url}
-                className="w-full h-full object-cover"
-                autoPlay
-                loop
-                muted
-              />
-            )
-          ) : (
-            <img
-              src={story.user.profile_picture}
-              alt={story.user.username}
-              className="w-full h-full object-cover"
-            />
-          )}
+{/* Story media */}
+{story.media_type === 'image' ? (
+  <img
+    src={story.media_url}
+    alt="story media"
+    className="w-full h-full object-cover"
+  />
+) : story.media_type === 'video' ? (
+  <video
+    src={story.media_url}
+    className="w-full h-full object-cover"
+    autoPlay
+    loop
+    muted
+  />
+) : story.media_type === 'text' ? (
+  <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold p-3 text-center">
+    {story.content || "✍️ Text Story"}
+  </div>
+) : (
+  <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600">
+    Story
+  </div>
+)}
+
 
           {/* Small circular user avatar */}
           <div className="absolute top-2 left-2 w-10 h-10 rounded-full border-2 border-blue-500 overflow-hidden">
